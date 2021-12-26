@@ -15,10 +15,35 @@ function Login() {
         }
         if (user) navigate('/dashboard', { replace: true })
     }, [user, loading]);
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.innerHTML = `
+         (function (w, d, s, u, o, e, p, a) {w[o] = w[o] || function () {
+        a=arguments,(w[o].q = w[o].q || []).push(a);'function'==typeof a[a.length - 1]&&a[a.length - 1](Promise.resolve())},
+        e = d.createElement(s), p = d.getElementsByTagName(s)[0];e.src = u;e.async = 1;p.parentNode.insertBefore(e, p)
+        })(window, document, 'script', 'https://cdn.ownid.com/js/firebase-sdk.es5.js', 'ownid');
+        ownid('init', {serverUrl: 'https://0exby31e3svoq7.server.ownid.com/ownid'});
+        
+          ownid('login', {
+      loginIdField: document.getElementById('email'),
+      passwordField: document.getElementById('password'),
+      submitButton: document.getElementById('submit'),
+      onSuccess: () => {
+        alert('OwnID login!');
+      },
+    });
+        `
+        document.body.appendChild(script);
+
+        return () => {
+            document.body.removeChild(script);
+        }
+    }, []);
     return (
         <div className="login">
             <div className="login__container">
                 <input
+                    id="email"
                     type="text"
                     className="login__textBox"
                     value={email}
@@ -26,6 +51,7 @@ function Login() {
                     placeholder="E-mail Address"
                 />
                 <input
+                    id="password"
                     type="password"
                     className="login__textBox"
                     value={password}
@@ -33,6 +59,7 @@ function Login() {
                     placeholder="Password"
                 />
                 <button
+                    id="submit"
                     className="login__btn"
                     onClick={() => signInWithEmailAndPassword(email, password)}
                 >
